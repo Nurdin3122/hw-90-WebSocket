@@ -1,4 +1,7 @@
 export interface incomingDraw {
     type:string;
-    payload:string;
+    payload: {
+        x:number,
+        y:number,
+    };
 }

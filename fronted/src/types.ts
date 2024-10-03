@@ -4,5 +4,8 @@ export interface WsDraw {
 }
 
 export interface Draw {
-    draw: string;
+    payload:{
+        x:number;
+        y:number;
+    }
 }

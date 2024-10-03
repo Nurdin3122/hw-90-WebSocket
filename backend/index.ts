@@ -5,14 +5,14 @@ import {WebSocket} from "ws";
 import { incomingDraw } from "./types.D";
 
 
+
 const app = express();
 expressWs(app);
-const port = 8003;
+const port = 8040;
 app.use(cors());
 const router = express.Router();
 
 const connectedClient :WebSocket[]= [];
-let draw:[] = [];
 
 router.ws('/drawing-board', (ws, req) => {
     console.log('client connected');
@@ -20,10 +20,16 @@ router.ws('/drawing-board', (ws, req) => {
 
     ws.on("message",(message) => {
         const decodedDraw = JSON.parse(message.toString()) as incomingDraw;
+        console.log(decodedDraw)
+       if (decodedDraw.type === "SET_DRAW") {
+           connectedClient.forEach(client => {
+               client.send(JSON.stringify({
+                   type:"NEW_DRAW",
+                   payload:decodedDraw.payload
+               }));
+           })
+       }
     })
-
-
-
 
 
     ws.on('close', () => {
