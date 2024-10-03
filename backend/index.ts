@@ -14,13 +14,12 @@ const router = express.Router();
 
 const connectedClient :WebSocket[]= [];
 
-router.ws('/drawing-board', (ws, req) => {
+router.ws('/drawing-board', (ws) => {
     console.log('client connected');
     connectedClient.push(ws);
 
     ws.on("message",(message) => {
         const decodedDraw = JSON.parse(message.toString()) as incomingDraw;
-        console.log(decodedDraw)
        if (decodedDraw.type === "SET_DRAW") {
            connectedClient.forEach(client => {
                client.send(JSON.stringify({

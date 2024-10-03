@@ -2,8 +2,9 @@ import './App.css'
 import {useEffect, useRef, useState} from "react";
 import {Draw, WsDraw} from "./types.ts";
 
+
 const App = () => {
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const ws = useRef<WebSocket | null>(null);
     const [moving,setMoving] = useState<boolean>(false);
     const [draw,setDraw] = useState<Draw[]>([]);
@@ -15,15 +16,12 @@ const App = () => {
             ws.current.onclose = () => console.log("ws closed");
         }
         if ("onmessage" in ws.current) {
-
             ws.current.onmessage = event => {
                 const decodedDraw = JSON.parse(event.data) as WsDraw;
-                console.log(decodedDraw)
 
                 if (decodedDraw.type === 'NEW_DRAW') {
                     setDraw((draw) => [...draw, decodedDraw.payload]);
                 }
-
             };
         }
 
@@ -36,6 +34,21 @@ const App = () => {
         }
 
     }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (canvas && draw.length > 0) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                const Pixels = draw.flat();
+                Pixels.forEach(pixel => {
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(pixel.x, pixel.y, 2, 2);
+                });
+            }
+        }
+    }, [draw]);
+
 
     const startMove = () => setMoving(true);
     const endMove = () => {
